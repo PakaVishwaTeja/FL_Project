@@ -1,3 +1,4 @@
+var data=[];
 var data0 = [];
 async function getArrayOfImage(url){
 
@@ -31,21 +32,19 @@ async function getArrayOfImage(url){
 
 }
 const input = document.querySelector("input")
-let imagesArray = []
+let imagesArray0 = []
 
 input.addEventListener("change", () => {
     const files = input.files
     for (let i = 0; i < files.length; i++) {
-      imagesArray.push(files[i])
+      imagesArray0.push(files[i])
     }
-    //console.log(imagesArray);
-     displayImages()
+     populateImageArray()
   })
 
 
-  function displayImages() {
-    
-    imagesArray.forEach((image, index) => {
+  function populateImageArray() {
+    imagesArray0.forEach((image, index) => {
     getArrayOfImage(`${URL.createObjectURL(image)}`);})
   }
 
@@ -57,8 +56,13 @@ function splitArrayByPercentage(arr , percentage){
     return {array1 , array2};
 }
 
+const generateButton = document.getElementById("generate");
+generateButton.addEventListener("click" , ()=>{
+    console.log("hii")
+})
+
 // Original array
-const originalArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+// const originalArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+//  console.log(splitArrayByPercentage(data0 , 10));
 
-
-console.log(splitArrayByPercentage(data0 , 10));
+// function generatetestNtrainingsets(data , )
