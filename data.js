@@ -84,7 +84,7 @@ export class MnistData {
     this.testLabels =
         this.datasetLabels.slice(NUM_CLASSES * NUM_TRAIN_ELEMENTS);
 
-    console.log(this);
+    //console.log(this);
   }
 
   nextTrainBatch(batchSize) {

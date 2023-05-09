@@ -1,6 +1,10 @@
-var data=[];
+// import { train } from "./script.js";
+let data = [];
+for (let i = 0; i < 10; i++) {
+  data.push([]);
+}
 var data0 = [];
-async function getArrayOfImage(url){
+async function getArrayOfImage(url , idx){
 
     const image = new Image();
     image.src = url;
@@ -26,43 +30,93 @@ async function getArrayOfImage(url){
     }
 
     //console.log(grayscaleData);
-   data0.push(grayscaleData);
+   data[idx].push(grayscaleData);
+   //return grayscaleData;
 
 };
 
 }
-const input = document.querySelector("input")
-let imagesArray0 = []
-
+const inputList = document.querySelectorAll("input")
+var imagesArray = [];
+for (let i = 0; i < 10; i++) {
+  imagesArray.push([]);
+}
+inputList.forEach((input , index)=>{
 input.addEventListener("change", () => {
     const files = input.files
     for (let i = 0; i < files.length; i++) {
-      imagesArray0.push(files[i])
+       imagesArray[index].push(files[i])
+    //console.log(files[i]);
     }
-     populateImageArray()
+      populateImageArray(index);
   })
+})
 
 
-  function populateImageArray() {
-    imagesArray0.forEach((image, index) => {
-    getArrayOfImage(`${URL.createObjectURL(image)}`);})
+
+  async function populateImageArray(idx) {
+    imagesArray[idx].forEach((image) => {
+     getArrayOfImage(`${URL.createObjectURL(image)}` , idx);
+    // console.log(curr);
+    // data[idx].push(curr);
+})
   }
 
 function splitArrayByPercentage(arr , percentage){
+    var factor = 100/percentage;
     const shuffledArray = arr.sort(() => 0.5 - Math.random());
-    const splitIndex = Math.floor(shuffledArray.length /percentage);
+    const splitIndex = Math.floor(shuffledArray.length /factor);
     const array1 = shuffledArray.slice(0, splitIndex);
     const array2 = shuffledArray.slice(splitIndex);
-    return {array1 , array2};
+    return [array1 , array2];
 }
 
 const generateButton = document.getElementById("generate");
-generateButton.addEventListener("click" , ()=>{
-    console.log("hii")
+generateButton.addEventListener("click" , async ()=>{
+    //console.log(GeneratetestAndTrainingSets(data, 10))
+    console.log(model);
+    //await train(model , data);
 })
 
-// Original array
-// const originalArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-//  console.log(splitArrayByPercentage(data0 , 10));
 
-// function generatetestNtrainingsets(data , )
+function GeneratetestAndTrainingSets(data , percentageOfTests ){
+    var trainingImages = [];
+    var trainingLabels = [];
+    var testingImages  = [];
+    var testingLabels  = [];
+
+    data.forEach((imagesArray , index) => {
+        var splitted = splitArrayByPercentage(imagesArray , percentageOfTests);
+        trainingImages.push(...splitted[1]);
+        testingImages.push(...splitted[0]);
+        trainingLabels.push(... Array(splitted[1].length).fill(index));
+        testingLabels.push(... Array(splitted[0].length).fill(index));
+    });
+
+
+
+    const indices = Array.from({length: trainingImages.length}, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+    const shuffledTrainingImages = indices.map(i => trainingImages[i]);
+    const shuffledTrainingLabels = indices.map(i => trainingLabels[i]);
+
+    const indices2 = Array.from({length: testingImages.length}, (_, i) => i);
+    for (let i = indices2.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices2[i], indices2[j]] = [indices2[j], indices2[i]];
+      }
+    const shuffledTestingImages = indices2.map(i => testingImages[i]);
+    const shuffledTestingLabels = indices2.map(i => testingLabels[i]);
+
+    return {shuffledTrainingImages,shuffledTrainingLabels,shuffledTestingImages,shuffledTestingLabels};
+}
+
+
+
+var d = [
+    [[1,2,3,4],[13,25,34,44],[11,22,33,44],[5,6,7,8]],
+    [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+]
