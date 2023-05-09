@@ -188,26 +188,43 @@ function getModel() {
     //   ];
     // });
     var temp = GeneratetestAndTrainingSets(data , 10);
-    console.log(temp.shuffledTestingImages);
-    // const aa = temp.shuffledTrainingImages.flat();
-    // const bb = temp.shuffledTrainingLabels.flat();
-    // const xs = tf.tensor2d(aa , [aa.length,784]);
-    // const ys = tf.tensor2d(bb , [bb.length, 784]);
-    const xs = temp.shuffledTrainingImages;
-    const ys = temp.shuffledTrainingLabels;
-    console.log(xs)
-    const dim1 = xs.length; // 2
-    const dim2 = xs[0].length; // 2
-    const dim3 = xs[0][0].length; // 2
+    //console.log(temp.shuffledTestingImages);
+    const aa = temp.shuffledTrainingImages.flat();
+    const bb = temp.shuffledTrainingLabels.flat();
+    const cc = temp.shuffledTestingImages.flat();
+    const dd = temp.shuffledTestingLabels.flat();
+    //console.log(aa);
+    const xs = tf.tensor(aa, [temp.shuffledTrainingImages.length, 784]);
+    const ys = tf.tensor(bb, [temp.shuffledTrainingImages.length, 10]);
+    const xt = tf.tensor(cc, [temp.shuffledTestingImages.length, 784]);
+    const yt = tf.tensor(dd, [temp.shuffledTestingLabels.length, 10]);
+var batch_size = Math.round(temp.shuffledTrainingImages.length/10);
+console.log(batch_size)
+    // console.log(aa);
+    // console.log(aa.length);
+    // console.log("train");
+    // console.log(bb);
+    //   const xs = tf.tensor2d(aa , [temp.shuffledTrainingImages.length, 784]);
+    //  const ys = tf.tensor2d(bb , [temp.shuffledTrainingLabels.length, 784]);
+    //  xs.reshape(xs.length,28,28,1);
+    // //const xs = temp.shuffledTrainingImages;
+    // //xs.reshape([xs.length,28,28,1]);
+    // //const ys = temp.shuffledTrainingLabels;
+    // //console.log(xs)
+    // const dim1 = xs.length; // 2
+    // const dim2 = xs[0].length; // 2
+    // const dim3 = xs[0][0].length; // 2
 
-    console.log(dim1, dim2, dim3);
-    return model.fit(xs, ys, {
-      // batchSize: BATCH_SIZE,
-      // validationData: [temp.shuffledTestingImages, temp.shuffledTrainingLabels],
+    //console.log(dim1, dim2, dim3);
+     return model.fit(xs, ys, {
+       batchSize: Math.max(512,batch_size),
+       validationData: [xt,yt],
       epochs: 10,
       shuffle: true,
       callbacks: fitCallbacks
     });
+    console.log('trained')
+    
   }
 
 const model = getModel();
@@ -238,7 +255,7 @@ async function getArrayOfImage(url , idx){
     context.drawImage(image, 0, 0, 28, 28);
     const imageData = context.getImageData(0, 0, 28, 28);
     const pixelData = imageData.data;
-    const grayscaleData = new Array(28 * 28);
+    const grayscaleData = new Float32Array(28 * 28);
 
     // Convert pixel data to grayscale and normalize to [0, 1]
     for (let i = 0; i < pixelData.length; i += 4) {
@@ -306,8 +323,10 @@ function splitArrayByPercentage(arr , percentage){
 const generateButton = document.getElementById("generate");
 generateButton.addEventListener("click" , async ()=>{
     //console.log(GeneratetestAndTrainingSets(data, 10))
-    console.log(model);
+    //console.log(model);
     await train(model , data);
+    await model.layers[0].getWeights()[0].print();
+    console.log("hello")
 })
 
 
@@ -321,8 +340,16 @@ function GeneratetestAndTrainingSets(data , percentageOfTests ){
         var splitted = splitArrayByPercentage(imagesArray , percentageOfTests);
         trainingImages.push(...splitted[1]);
         testingImages.push(...splitted[0]);
-        trainingLabels.push(... Array(splitted[1].length).fill(index));
-        testingLabels.push(... Array(splitted[0].length).fill(index));
+        var iarr = [];
+        for(var i=0;i<10;i++){
+          if(i == index){
+            iarr.push(1);
+          }else{
+            iarr.push(0);
+          }
+        }
+        trainingLabels.push(... Array(splitted[1].length).fill(iarr));
+        testingLabels.push(... Array(splitted[0].length).fill(iarr));
     });
 
 
