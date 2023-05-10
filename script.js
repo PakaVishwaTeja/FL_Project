@@ -286,11 +286,31 @@ async function getArrayOfImage(url , idx){
 
 }
 const inputList = document.querySelectorAll("input")
+const predictButton = document.getElementById("predict")
 var imagesArray = [];
 for (let i = 0; i < 10; i++) {
   imagesArray.push([]);
 }
-inputList.forEach((input , index)=>{
+// for(var index = 0 ; index<10 ; index++){
+//   var input = inputList[index];
+//   input.addEventListener("change", () => {
+//     const files = input.files
+//     for (let i = 0; i < files.length; i++) {
+//        imagesArray[index].push(files[i])
+//     //console.log(files[i]);
+//     }
+//       populateImageArray(index);
+//   })
+// }
+predictButton.addEventListener("click" , ()=>{
+  console.log("hi")
+})
+
+const tenInputs = Array.prototype.slice.call(inputList, 0, 10);
+
+// console.log(firstTenHTags)
+// console.log(inputList)
+tenInputs.forEach((input , index)=>{
 input.addEventListener("change", () => {
     const files = input.files
     for (let i = 0; i < files.length; i++) {
